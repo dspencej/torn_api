@@ -139,84 +139,84 @@ class TornAPIClient:
         """Get the current server time for the user section."""
         return self._request("/user/timestamp")
 
-    def get_user(self, selections: str = "default"):
-        """Get any User selection."""
+    def get_user(self, selections: str = "basic,faction,races"):
+        """Get any User selection. Defaults to basic info with faction and race data."""
         return self._request("/user", {"selections": selections})
 
     # --- Faction Endpoints ---
-    def get_faction_applications(self, selections: str = "default"):
+    def get_faction_applications(self, selections: str = "applications"):
         """Get your faction's applications."""
         return self._request("/faction/applications", {"selections": selections})
 
-    def get_faction_attacks(self, selections: str = "default"):
+    def get_faction_attacks(self, selections: str = "attacks"):
         """Get your faction's detailed attacks."""
         return self._request("/faction/attacks", {"selections": selections})
 
-    def get_faction_attacksfull(self, selections: str = "default"):
+    def get_faction_attacksfull(self, selections: str = "attacksfull"):
         """Get your faction's simplified attacks."""
         return self._request("/faction/attacksfull", {"selections": selections})
 
-    def get_faction_basic(self, faction_id: int = None, selections: str = "default"):
+    def get_faction_basic(self, faction_id: int = None, selections: str = "basic"):
         """Get basic faction details. If faction_id is provided, retrieves details for that faction."""
         path = f"/faction/{faction_id}/basic" if faction_id else "/faction/basic"
         return self._request(path, {"selections": selections})
 
-    def get_faction_chain(self, faction_id: int = None, selections: str = "default"):
+    def get_faction_chain(self, faction_id: int = None, selections: str = "chain"):
         """Get your faction's current chain."""
         path = f"/faction/{faction_id}/chain" if faction_id else "/faction/chain"
         return self._request(path, {"selections": selections})
 
-    def get_faction_chains(self, faction_id: int = None, selections: str = "default"):
+    def get_faction_chains(self, faction_id: int = None, selections: str = "chains"):
         """Get a list of completed chains. If faction_id is provided, retrieves for that faction."""
         path = f"/faction/{faction_id}/chains" if faction_id else "/faction/chains"
         return self._request(path, {"selections": selections})
 
-    def get_faction_chainreport(self, chain_id: int = None, selections: str = "default"):
+    def get_faction_chainreport(self, chain_id: int = None, selections: str = "chainreport"):
         """Get your faction's latest chain report or for a specific chain if chain_id is provided."""
         path = f"/faction/{chain_id}/chainreport" if chain_id else "/faction/chainreport"
         return self._request(path, {"selections": selections})
 
-    def get_faction_crimes(self, selections: str = "default"):
+    def get_faction_crimes(self, selections: str = "crimes"):
         """Get your faction's organized crimes."""
         return self._request("/faction/crimes", {"selections": selections})
 
-    def get_faction_hof(self, faction_id: int = None, selections: str = "default"):
+    def get_faction_hof(self, faction_id: int = None, selections: str = "hof"):
         """Get your faction's hall of fame rankings, or for a specific faction if faction_id is provided."""
         path = f"/faction/{faction_id}/hof" if faction_id else "/faction/hof"
         return self._request(path, {"selections": selections})
 
-    def get_faction_members(self, faction_id: int = None, selections: str = "default"):
+    def get_faction_members(self, faction_id: int = None, selections: str = "members"):
         """Get a list of faction members. If faction_id is provided, retrieves members for that faction."""
         path = f"/faction/{faction_id}/members" if faction_id else "/faction/members"
         return self._request(path, {"selections": selections})
 
-    def get_faction_news(self, selections: str = "default"):
+    def get_faction_news(self, selections: str = "news"):
         """Get your faction's news details."""
         return self._request("/faction/news", {"selections": selections})
 
-    def get_faction_rankedwars(self, faction_id: int = None, selections: str = "default"):
+    def get_faction_rankedwars(self, faction_id: int = None, selections: str = "rankedwars"):
         """Get ranked wars. If faction_id is provided, retrieves for that faction."""
         path = f"/faction/{faction_id}/rankedwars" if faction_id else "/faction/rankedwars"
         return self._request(path, {"selections": selections})
 
-    def get_faction_rankedwarreport(self, faction_id: int, selections: str = "default"):
+    def get_faction_rankedwarreport(self, faction_id: int, selections: str = "rankedwarreport"):
         """Get ranked war details for a specific faction."""
         return self._request(f"/faction/{faction_id}/rankedwarreport", {"selections": selections})
 
-    def get_faction_revives(self, selections: str = "default"):
+    def get_faction_revives(self, selections: str = "revives"):
         """Get your faction's detailed revives."""
         return self._request("/faction/revives", {"selections": selections})
 
-    def get_faction_revivesFull(self, selections: str = "default"):
+    def get_faction_revivesFull(self, selections: str = "revivesfull"):
         """Get your faction's simplified revives."""
         return self._request("/faction/revivesFull", {"selections": selections})
 
-    def get_faction_wars(self, faction_id: int = None, selections: str = "default"):
+    def get_faction_wars(self, faction_id: int = None, selections: str = "wars"):
         """Get your faction's wars & pacts details, or for a specific faction if faction_id is provided."""
         path = f"/faction/{faction_id}/wars" if faction_id else "/faction/wars"
         return self._request(path, {"selections": selections})
 
-    def get_faction_lookup(self, selections: str = "default"):
+    def get_faction_lookup(self, selections: str = "lookup"):
         """Get all available faction selections."""
         return self._request("/faction/lookup", {"selections": selections})
 
@@ -233,7 +233,7 @@ class TornAPIClient:
         """Get item market listings for a specific item."""
         return self._request(f"/market/{item_id}/itemmarket", {"selections": selections})
 
-    def get_market_lookup(self, selections: str = "default"):
+    def get_market_lookup(self, selections: str = "lookup"):
         """Get all available market selections."""
         return self._request("/market/lookup", {"selections": selections})
 
@@ -256,13 +256,19 @@ class TornAPIClient:
 
     def get_racing_races(self, selections: str = "default"):
         """Get races."""
-        return self._request("/racing/races", {"selections": selections})
+        data = self._request("/racing/races", {"selections": selections})
+        if data and "races" in data:
+            for race in data["races"]:
+                # Ensure the race object has a 'race_id' field for consistency.
+                if "race_id" not in race and "id" in race:
+                    race["race_id"] = race["id"]
+        return data
 
     def get_racing_race(self, race_id: int, selections: str = "default"):
         """Get specific race details for a given race."""
         return self._request(f"/racing/{race_id}/race", {"selections": selections})
 
-    def get_racing_records(self, track_id: int, selections: str = "default"):
+    def get_racing_records(self, track_id: int, selections: str = "records"):
         """Get track records for a specific track."""
         return self._request(f"/racing/{track_id}/records", {"selections": selections})
 
@@ -270,7 +276,7 @@ class TornAPIClient:
         """Get race tracks and descriptions."""
         return self._request("/racing/tracks", {"selections": selections})
 
-    def get_racing_lookup(self, selections: str = "default"):
+    def get_racing_lookup(self, selections: str = "lookup"):
         """Get all available racing selections."""
         return self._request("/racing/lookup", {"selections": selections})
 

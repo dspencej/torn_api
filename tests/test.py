@@ -4,6 +4,8 @@ import unittest
 import logging
 import coloredlogs
 from datetime import datetime
+
+from scripts.log_parser import generate_html_log
 from torn_api import TornAPIClient
 
 # Set up timestamped log directory.
@@ -14,17 +16,13 @@ log_file = os.path.join(log_dir, "logs.txt")
 
 # Configure logging format.
 LOG_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
-
-# Configure colored console logging.
 coloredlogs.install(level="DEBUG", fmt=LOG_FORMAT)
 
-# Create file handler.
-file_handler = logging.FileHandler(log_file)
+# Create file handler with UTF-8 encoding.
+file_handler = logging.FileHandler(log_file, encoding="utf-8")
 file_handler.setLevel(logging.DEBUG)
 formatter = logging.Formatter(LOG_FORMAT)
 file_handler.setFormatter(formatter)
-
-# Attach file handler to the root logger.
 logger = logging.getLogger()
 logger.addHandler(file_handler)
 
@@ -85,6 +83,12 @@ class TestTornAPIClientIntegration(unittest.TestCase):
             logging.exception("Error fetching forum threads data")
             cls.thread_id = None
         logging.debug("Extracted thread_id: %s", cls.thread_id)
+
+    @classmethod
+    def tearDownClass(cls):
+        # Generate HTML log report in the same directory as the log file.
+        output_html = os.path.join(log_dir, "logs.html")
+        generate_html_log(log_file, output_html)
 
     def check_response(self, response):
         """Basic check: response should be a dictionary."""
