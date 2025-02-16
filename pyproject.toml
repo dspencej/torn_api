@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "torn-api"
+version = "0.1.0"
+description = ""
+authors = ["Dustin Spencer <dspencej@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+requests = "^2.32.3"
+coloredlogs = "^15.0.1"
+mkdocs = "^1.6.1"
+mkdocs-material = "^9.6.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
