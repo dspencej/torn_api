@@ -9,7 +9,7 @@ Use the navigation on the left to explore installation instructions, usage examp
 To install the package, you can use Poetry. First, clone the repository, then install the dependencies:
 
 ```bash
-git clone https://github.com/dspencej/torn-api.git
+git clone https://github.com/dspencej/torn-api
 cd torn-api
 poetry install
 ```
